@@ -1,17 +1,57 @@
-Use the GMail MCP to retrieve all LinkedIn emails that include job postings. The emails might come from different addresses,
-but all addresses use the `@linkedin.com` domain. Note the subject of each email found; the value will be labeled as
-"sourceEmail" in the eventual output. Do not skip any emails from LinkedIn.
+# Goal
 
-Job postings are made up of
+The goal is to retrieve job postings from LinkedIn emails that are currently in the Inbox. Only emails in the
+Inbox should be analyzed. Whenever possible, job postings should be deduplicated, with the latest job posting
+appearing in the output.
 
-1. The job title
-2. A link to the job posting
+# Tools
+
+1. GMail connector
+2. Google Drive connector
+3. JSON Schema validator
+
+# High Level Workflow
+
+1. Using the GMail connector, retrieve all emails from the Inbox that come from `@linkedin.com` addresses
+2. For emails in step 1 that include job postings, extract the information listed in the `Job Posting Details` section below
+3. Generate JSON objects with the job posting details. See the `JSON File Generation` section for details.
+4. Validate the output JSON document against the JSON Schema in the `JSON File Generation` section below
+5. Save the JSON document in Google Drive using the Google Drive connector
+6. Report success or failure, and tips for speeding up the process
+
+# Workflow Details
+
+## Email Content Extraction
+
+Use the GMail connector to retrieve all emails currently in the Inbox, that come from `@linkedin.com` addresses. For example,
+email addresses include (but are not limited to):
+
+- jobalerts-noreply@linkedin.com
+- jobs-noreply@linkedin.com
+
+IMPORTANT: If there are no emails in the Inbox, DO NOT look in other folders. Instead, indicate that there were no emails in the Inbox.
+IMPORTANT: Emails can be very long. Download emails before performing analysis.
+
+If there are emails in the Inbox, for each email, retrieve
+
+1. The email content
+2. The subject of the email (will be used later as `sourceEmail`)
+
+## Job Posting Details
+
+Using the email content extract the following information:
+
+1. The job title (e.g. Senior Software Engineer)
+2. The link to the job posting
 3. The name of the hiring company
 4. An OPTIONAL job salary
 5. An OPTIONAL job location, for example hybrid, on-site, in-person, or remote
+6. The subject of the email that included the job posting
 
-The result of the analysis should be a JSON file named after the current date and time, for example `linkedin-jobs-2026-06-22-17-13-00.json` (with
-seconds as the last component). The file should include the information found, in this JSON Schema format:
+## JSON File Generation
+
+The result of the analysis should be a JSON file named after the current date and time in the format `linkedin-jobs-YYYY-MM-DD-HH-mm-ss.json`,
+for example `linkedin-jobs-2026-06-22-17-13-00.json`. The file should include the information found, in this JSON Schema format:
 
 ```json
 {
@@ -90,12 +130,11 @@ A sample should look like this:
 ]
 ```
 
-The JSON file should be saved in the `Professional` folder inside my Google Drive.
+## JSON File Validation
 
-MUST HAVES:
+The JSON file should validate against the specified schema. If the validation fails, save the file with a `.FAILED.json` extension
+instead, so that the file can be analyzed manually by a human.
 
-1. Look at ALL emails that are currently in my inbox
-2. ALL emails should have the `@linkedin.com` domain
-3. Deduplicate job postings by URL as much as possible.
-4. Most emails are pretty long. Download emails before processing them.
-5. The output JSON file must validate against the JSON Schema provided. If the validation fails, replace the `.json` extension with `.FAILED.json`.
+## JSON File Storage
+
+The JSON file should be saved in the `Professional` folder inside my Google Drive, using the Google Drive connector
