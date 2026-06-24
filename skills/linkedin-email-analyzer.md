@@ -7,8 +7,7 @@ appearing in the output.
 # Tools
 
 1. GMail connector
-2. Google Drive connector
-3. JSON Schema validator
+2. JSON Schema validator
 
 # High Level Workflow
 
@@ -16,7 +15,7 @@ appearing in the output.
 2. For emails in step 1 that include job postings, extract the information listed in the `Job Posting Details` section below
 3. Generate JSON objects with the job posting details. See the `JSON File Generation` section for details.
 4. Validate the output JSON document against the JSON Schema in the `JSON File Generation` section below
-5. Save the JSON document in Google Drive using the Google Drive connector
+5. Make the file available for download
 6. Report success or failure, and tips for speeding up the process
 
 # Workflow Details
@@ -30,7 +29,7 @@ email addresses include (but are not limited to):
 - jobs-noreply@linkedin.com
 
 IMPORTANT: If there are no emails in the Inbox, DO NOT look in other folders. Instead, indicate that there were no emails in the Inbox.
-IMPORTANT: Emails can be very long. Download emails before performing analysis.
+IMPORTANT: Emails can be very long. Download emails before performing analysis. Only consider the email plaintext bodies.
 
 If there are emails in the Inbox, for each email, retrieve
 
@@ -50,8 +49,9 @@ Using the email content extract the following information:
 
 ## JSON File Generation
 
-The result of the analysis should be a JSON file named after the current date and time in the format `linkedin-jobs-YYYY-MM-DD-HH-mm-ss.json`,
-for example `linkedin-jobs-2026-06-22-17-13-00.json`. The file should include the information found, in this JSON Schema format:
+The result of the analysis should be a JSON file named after the current date and time in the
+format `linkedin-jobs-YYYY-MM-DD-HH-mm-ss.json`, for example `linkedin-jobs-2026-06-22-17-13-00.json`. The
+file should include the information found, in this JSON Schema format:
 
 ```json
 {
@@ -135,6 +135,6 @@ A sample should look like this:
 The JSON file should validate against the specified schema. If the validation fails, save the file with a `.FAILED.json` extension
 instead, so that the file can be analyzed manually by a human.
 
-## JSON File Storage
+## JSON File Download
 
-The JSON file should be saved in the `Professional` folder inside my Google Drive, using the Google Drive connector
+The JSON file should be made available for download
